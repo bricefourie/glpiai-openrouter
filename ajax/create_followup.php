@@ -17,6 +17,18 @@ if (!isset($_POST['ticket_id'])) {
 
 $ticket_id = $_POST['ticket_id'];
 
+global $DB;
+$table_name = 'glpi_plugin_openrouter_disabled_tickets';
+$query = "SELECT `tickets_id` FROM `$table_name` WHERE `tickets_id` = '$ticket_id'";
+$result = $DB->query($query);
+
+if ($DB->numrows($result) > 0) {
+    // Bot is disabled for this ticket
+    http_response_code(200);
+    echo json_encode(['success' => false, 'message' => 'Bot is disabled for this ticket.']);
+    exit;
+}
+
 $config = Config::getConfig();
 
 if(isset($config['openrouter_max_api_usage_count']) && isset($config['openrouter_api_usage_count']) && isset($config['openrouter_api_reset_day']))
